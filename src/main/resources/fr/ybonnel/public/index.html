@@ -61,6 +61,12 @@
 <div ng-controller="ScoresCtrl">
     <h1 class="card">Scores of CodeStory Elevator</h1>
 
+    <div class="card" ng-repeat="score in scores">
+        <h3>{{ score.pseudo }}</h3>
+        <p>Actual score : {{ score.scores[score.scores.length - 1].score | number:0 }}</p>
+        <p>Mean score by 5 minutes (in last hour) : {{ score.mean | number:0 }}</p>
+    </div>
+
     <div class="histo">
         <div class="histo-content">
             <h3>Historique des scores</h3>
@@ -68,10 +74,12 @@
         </div>
     </div>
 
-    <div class="card" ng-repeat="score in scores">
-        <h3>{{ score.pseudo }}</h3>
-        <p>Actual score : {{ score.scores[score.scores.length - 1].score | number:0 }}</p>
-        <p>Mean score by 5 minutes (in last hour) : {{ score.mean | number:0 }}</p>
+
+    <div class="histo">
+        <div class="histo-content">
+            <h3>Historique des deltas</h3>
+            <div id="delta-timeseries"></div>
+        </div>
     </div>
 
 </div>
@@ -80,22 +88,33 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
 <script src="/js/i18n/angular-locale_fr.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/2.3.1/highcharts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/3.0.2/highcharts.js"></script>
 <script type="text/javascript">
     function ScoresCtrl($scope, $http, $filter) {
         $http.get("/scores").success(function(data) {
             $scope.scores = data;
             var scoresTimeSeries = [];
+            var deltaTimeSeries = [];
             angular.forEach(data, function(player) {
                 var sum = 0;
                 var scoreForTimeSerie = {};
                 scoreForTimeSerie.name = player.pseudo;
                 scoreForTimeSerie.data = [];
+                var deltaForTimeSerie = {};
+                deltaForTimeSerie.name = player.pseudo;
+                deltaForTimeSerie.data = [];
+
                 var precScore = 0;
                 var valuesBeforesEnd = player.scores.length;
                 angular.forEach(player.scores, function(score) {
-                    if (precScore !== 0 && valuesBeforesEnd <= 13) {
-                        sum += (score.score - precScore);
+                    if (precScore !== 0) {
+                        deltaForTimeSerie.data.push([
+                            jsonStringToDate(score.timeOfScore).getTime(),
+                            score.score - precScore
+                        ]);
+                        if(valuesBeforesEnd <= 13) {
+                            sum += (score.score - precScore);
+                        }
                     }
                     precScore = score.score;
                     valuesBeforesEnd--;
@@ -108,8 +127,10 @@
                     player.mean = sum / (Math.min(player.scores.length - 1, 13));
                 }
                 scoresTimeSeries.push(scoreForTimeSerie);
+                deltaTimeSeries.push(deltaForTimeSerie);
             });
             drawScoresTimeseries(scoresTimeSeries);
+            drawDeltaTimeseries(deltaTimeSeries);
         });
     }
 
@@ -145,7 +166,8 @@
         var chart = new Highcharts.Chart({
             chart: {
                 renderTo: 'scores-timeseries',
-                type: 'line'
+                type: 'line',
+                zoomType: 'x'
             },
             title: {
                 text: ''
@@ -162,6 +184,30 @@
         });
 
         chart.redraw();
+    }
+
+    function drawDeltaTimeseries(deltaTimeseries) {
+        var chartDelta = new Highcharts.Chart({
+            chart: {
+                renderTo: 'delta-timeseries',
+                type: 'line',
+                zoomType: 'x'
+            },
+            title: {
+                text: ''
+            },
+            xAxis: {
+                type: 'datetime'
+            },
+            yAxis: {
+                title: {
+                    text: 'Score'
+                }
+            },
+            series: deltaTimeseries
+        });
+
+        chartDelta.redraw();
     }
 </script>
 </body>
