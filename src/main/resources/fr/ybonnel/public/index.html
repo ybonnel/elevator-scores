@@ -70,8 +70,8 @@
 
     <div class="card" ng-repeat="score in scores">
         <h3>{{ score.pseudo }}</h3>
-        <p>Actual score : {{ score.scores[score.scores.length - 1].score }}</p>
-        <p>Mean score by 5 minutes (in last hour) : {{ score.mean }}</p>
+        <p>Actual score : {{ score.scores[score.scores.length - 1].score | number:0 }}</p>
+        <p>Mean score by 5 minutes (in last hour) : {{ score.mean | number:0 }}</p>
     </div>
 
 </div>
@@ -79,6 +79,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+<script src="/js/i18n/angular-locale_fr.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/2.3.1/highcharts.js"></script>
 <script type="text/javascript">
     function ScoresCtrl($scope, $http, $filter) {
