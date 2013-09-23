@@ -1,0 +1,144 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Scores</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+
+    <style type="text/css">
+        body {
+            background: #f3f3f3!important;
+        }
+        .card {
+            background: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            border-radius: 3px 3px;
+            margin:10px;
+            padding: 10px;
+            min-width: 300px;
+            text-align: center;
+            float: left;
+        }
+
+        h1.card {
+            width: 100%;
+            margin-left: 0;
+            margin-top: 0;
+            margin-right: 0;
+            text-align: center;
+        }
+
+        div.histo {
+            background: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            border-radius: 3px 3px;
+            margin: 0 0 10px;
+            padding: 10px;
+            width: 100%;
+            text-align: center;
+            float: left;
+        }
+
+
+    </style>
+
+</head>
+<body ng-app>
+
+
+<div ng-controller="ScoresCtrl">
+    <h1 class="card">Scores of CodeStory Elevator</h1>
+
+    <div class="histo">
+        <h3>Historique des scores</h3>
+        <div id="scores-timeseries"></div>
+    </div>
+
+    <div class="card" ng-repeat="score in scores">
+        <h3>{{ score.pseudo }}</h3>
+        <p>Actual score : {{ score.scores[score.scores.length - 1].score }}</p>
+    </div>
+
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/2.3.1/highcharts.js"></script>
+<script type="text/javascript">
+    function ScoresCtrl($scope, $http, $filter) {
+        $http.get("/scores").success(function(data) {
+            $scope.scores = data;
+            var scoresTimeSeries = [];
+            angular.forEach(data, function(player) {
+                var scoreForTimeSerie = {};
+                scoreForTimeSerie.name = player.pseudo;
+                scoreForTimeSerie.data = [];
+                angular.forEach(player.scores, function(score) {
+                    scoreForTimeSerie.data.push([
+                            jsonStringToDate(score.timeOfScore).getTime(),
+                            score.score
+                    ]);
+                });
+                scoresTimeSeries.push(scoreForTimeSerie);
+            });
+            drawScoresTimeseries(scoresTimeSeries);
+        });
+    }
+
+    var R_ISO8601_STR = /^(\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?::?(\d\d)(?::?(\d\d)(?:\.(\d+))?)?)?(Z|([+-])(\d\d):?(\d\d))?)?$/;
+                       // 1        2       3         4          5          6          7          8  9     10      11
+    function jsonStringToDate(string) {
+        var match;
+        if (match = string.match(R_ISO8601_STR)) {
+            var date = new Date(0),
+                    tzHour = 0,
+                    tzMin  = 0,
+                    dateSetter = match[8] ? date.setUTCFullYear : date.setFullYear,
+                    timeSetter = match[8] ? date.setUTCHours : date.setHours;
+
+            if (match[9]) {
+                tzHour = Number(match[9] + match[10]);
+                tzMin = Number(match[9] + match[11]);
+            }
+            dateSetter.call(date, Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+            var h = Number(match[4]||0) - tzHour;
+            var m = Number(match[5]||0) - tzMin;
+            var s = Number(match[6]||0);
+            var ms = Math.round(parseFloat('0.' + (match[7]||0)) * 1000);
+            timeSetter.call(date, h, m, s, ms);
+            return date;
+        }
+        return string;
+    }
+
+
+
+    function drawScoresTimeseries(scoresTimeseries) {
+        var chart = new Highcharts.Chart({
+            chart: {
+                renderTo: 'scores-timeseries',
+                type: 'line'
+            },
+            title: {
+                text: ''
+            },
+            xAxis: {
+                type: 'datetime'
+            },
+            yAxis: {
+                title: {
+                    text: 'Score'
+                }
+            },
+            series: scoresTimeseries
+        });
+
+        chart.redraw();
+    }
+</script>
+</body>
+</html>

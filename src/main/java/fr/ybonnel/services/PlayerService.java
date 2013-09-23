@@ -14,22 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.mycompany.services;
+package fr.ybonnel.services;
 
-import com.google.code.morphia.Datastore;
-import com.google.code.morphia.Morphia;
-import com.mongodb.MongoClient;
-import com.mycompany.model.Beer;
+import fr.ybonnel.model.PlayerInfo;
+import retrofit.http.GET;
 
-public class MongoService {
+import java.util.List;
 
-    private static Datastore datastore;
+public interface PlayerService {
 
-    public static void setMongoClient(MongoClient mongoClient, String dbName) {
-        datastore = new Morphia().map(Beer.class).createDatastore(mongoClient, dbName);
-    }
+    @GET("/resources/leaderboard")
+    List<PlayerInfo> leaderboard();
 
-    public static Datastore getDatastore() {
-        return datastore;
-    }
 }

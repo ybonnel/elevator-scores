@@ -1,9 +1,7 @@
-package com.mycompany;
+package fr.ybonnel;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import com.mycompany.services.BeerRessource;
-import com.mycompany.services.MongoService;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
 import de.flapdoodle.embed.mongo.MongodStarter;
@@ -11,9 +9,19 @@ import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.runtime.Network;
+import fr.ybonnel.model.ScoreWithHistory;
+import fr.ybonnel.services.MongoService;
+import fr.ybonnel.services.ScoreJob;
+import fr.ybonnel.simpleweb4j.exception.HttpErrorException;
+import fr.ybonnel.simpleweb4j.handlers.Response;
+import fr.ybonnel.simpleweb4j.handlers.Route;
+import fr.ybonnel.simpleweb4j.handlers.RouteParameters;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import static fr.ybonnel.simpleweb4j.SimpleWeb4j.*;
 
@@ -35,10 +43,26 @@ public class Main {
         // Set the http port.
         setPort(port);
         // Set the path to static resources.
-        setPublicResourcesPath("/com/mycompany/public");
+        setPublicResourcesPath("/fr/ybonnel/public");
 
-        // Add resource for beers on "/beer"
-        resource(new BeerRessource("/beer"));
+        get(new Route<Void, List<ScoreWithHistory>>("/scores", Void.class) {
+
+            @Override
+            public Response<List<ScoreWithHistory>> handle(Void param, RouteParameters routeParams) throws HttpErrorException {
+                List<ScoreWithHistory> result = MongoService.getDatastore().find(ScoreWithHistory.class).asList();
+                Collections.sort(result, new Comparator<ScoreWithHistory>() {
+                    @Override
+                    public int compare(ScoreWithHistory o1, ScoreWithHistory o2) {
+                        Integer score1 = o1.getScores().get(o1.getScores().size() - 1).getScore();
+                        Integer score2 = o2.getScores().get(o2.getScores().size() - 1).getScore();
+                        return score2.compareTo(score1);
+                    }
+                });
+                return new Response<>(result);
+            }
+        });
+
+        ScoreJob job = new ScoreJob();
 
         // Start the server.
         start(waitStop);
@@ -102,7 +126,7 @@ public class Main {
         }
 
         // Default port;
-        return 9999;
+        return 10000;
     }
 
     /**
