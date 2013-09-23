@@ -32,14 +32,23 @@
         }
 
         div.histo {
+            float: left;
+            padding: 10px;
+            width: 100%;
+        }
+
+        div.histo-content {
             background: white;
             box-shadow: 0 1px 2px rgba(0,0,0,0.5);
             border-radius: 3px 3px;
-            margin: 0 0 10px;
             padding: 10px;
-            width: 100%;
+            width:100%;
             text-align: center;
             float: left;
+        }
+
+        div#scores-timeseries {
+            width:97%;
         }
 
 
@@ -53,13 +62,16 @@
     <h1 class="card">Scores of CodeStory Elevator</h1>
 
     <div class="histo">
-        <h3>Historique des scores</h3>
-        <div id="scores-timeseries"></div>
+        <div class="histo-content">
+            <h3>Historique des scores</h3>
+            <div id="scores-timeseries"></div>
+        </div>
     </div>
 
     <div class="card" ng-repeat="score in scores">
         <h3>{{ score.pseudo }}</h3>
         <p>Actual score : {{ score.scores[score.scores.length - 1].score }}</p>
+        <p>Mean score by 5 minutes (in last hour) : {{ score.mean }}</p>
     </div>
 
 </div>
@@ -74,15 +86,26 @@
             $scope.scores = data;
             var scoresTimeSeries = [];
             angular.forEach(data, function(player) {
+                var sum = 0;
                 var scoreForTimeSerie = {};
                 scoreForTimeSerie.name = player.pseudo;
                 scoreForTimeSerie.data = [];
+                var precScore = 0;
+                var valuesBeforesEnd = player.scores.length;
                 angular.forEach(player.scores, function(score) {
+                    if (precScore !== 0 && valuesBeforesEnd <= 13) {
+                        sum += (score.score - precScore);
+                    }
+                    precScore = score.score;
+                    valuesBeforesEnd--;
                     scoreForTimeSerie.data.push([
                             jsonStringToDate(score.timeOfScore).getTime(),
                             score.score
                     ]);
                 });
+                if (player.scores.length > 0) {
+                    player.mean = sum / (Math.min(player.scores.length - 1, 13));
+                }
                 scoresTimeSeries.push(scoreForTimeSerie);
             });
             drawScoresTimeseries(scoresTimeSeries);
