@@ -91,6 +91,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/3.0.2/highcharts.js"></script>
 <script type="text/javascript">
     function ScoresCtrl($scope, $http, $filter) {
+
+        var currentTimeOffsetInMs = new Date().getTimezoneOffset() * 60 * 1000;
+
         $http.get("/scores").success(function(data) {
             $scope.scores = data;
             var scoresTimeSeries = [];
@@ -109,7 +112,7 @@
                 angular.forEach(player.scores, function(score) {
                     if (precScore !== 0) {
                         deltaForTimeSerie.data.push([
-                            jsonStringToDate(score.timeOfScore).getTime(),
+                            jsonStringToDate(score.timeOfScore).getTime() + currentTimeOffsetInMs,
                             score.score - precScore
                         ]);
                         if(valuesBeforesEnd <= 13) {
@@ -119,7 +122,7 @@
                     precScore = score.score;
                     valuesBeforesEnd--;
                     scoreForTimeSerie.data.push([
-                            jsonStringToDate(score.timeOfScore).getTime(),
+                            jsonStringToDate(score.timeOfScore).getTime() + currentTimeOffsetInMs,
                             score.score
                     ]);
                 });
