@@ -112,22 +112,28 @@
                 deltaForTimeSerie.data = [];
 
                 var precScore = 0;
+                var precDate;
                 var valuesBeforesEnd = player.scores.length;
                 angular.forEach(player.scores, function(score) {
+                    var dateOfScore = jsonStringToDate(score.timeOfScore).getTime() - currentTimeOffsetInMs;
                     if (precScore !== 0) {
+                        var delta = (score.score - precScore);
+                        var deltaDate = dateOfScore - precDate;
+                        delta = Math.round((delta / deltaDate) * 1000 * 300 * 100)/100;
                         deltaForTimeSerie.data.push([
-                            jsonStringToDate(score.timeOfScore).getTime() - currentTimeOffsetInMs,
-                            score.score - precScore
+                            dateOfScore,
+                            delta
                         ]);
                         if(valuesBeforesEnd <= 13) {
                             sum += (score.score - precScore);
                         }
                     }
                     precScore = score.score;
+                    precDate = dateOfScore;
                     valuesBeforesEnd--;
                     scoreForTimeSerie.data.push([
-                            jsonStringToDate(score.timeOfScore).getTime() - currentTimeOffsetInMs,
-                            score.score
+                        dateOfScore,
+                        score.score
                     ]);
                 });
                 if (player.scores.length > 0) {
