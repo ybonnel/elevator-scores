@@ -18,8 +18,12 @@ package fr.ybonnel.model;
 
 import com.google.code.morphia.annotations.*;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 @Entity("scores")
 public class ScoreWithHistory {
@@ -70,5 +74,21 @@ public class ScoreWithHistory {
             internalId = new ObjectId(id);
         }
         return this;
+    }
+
+    public void aggregateScores(DateTime now) {
+        Iterator<Score> itScores = getScores().iterator();
+        Set<String> hoursKept = new HashSet<>();
+        while (itScores.hasNext()) {
+            Score score = itScores.next();
+            DateTime dateTimeOfScore = new DateTime(score.getTimeOfScore());
+            String hourOfScore = dateTimeOfScore.toString("yyyyMMddHH");
+            if (dateTimeOfScore.compareTo(now.minusHours(12)) < 0
+                    && hoursKept.contains(hourOfScore)) {
+                itScores.remove();
+            } else {
+                hoursKept.add(hourOfScore);
+            }
+        }
     }
 }
