@@ -51,6 +51,7 @@ public class ScoreJob implements Runnable {
                     scoreWithHistory = new ScoreWithHistory();
                     scoreWithHistory.setPseudo(playerInfo.getPseudo());
                 }
+                scoreWithHistory.setEmail(playerInfo.getEmail());
                 scoreWithHistory.getScores().add(new Score(now.toDate(), playerInfo.getScore()));
                 scoreWithHistory.aggregateScores(now);
                 MongoService.getDatastore().save(scoreWithHistory.prepareForDb());

@@ -18,7 +18,8 @@
             border-radius: 3px 3px;
             margin:10px;
             padding: 10px;
-            min-width: 300px;
+            min-width: 350px;
+            width: 31%;
             text-align: center;
             float: left;
         }
@@ -59,13 +60,14 @@
     </style>
 
 </head>
-<body ng-app>
+<body ng-app="ScoreApp">
 
 
 <div ng-controller="ScoresCtrl">
     <h1 class="card">Scores of CodeStory Elevator</h1>
 
     <div class="card" ng-repeat="score in scores">
+        <gravatar-image data-email="score.email" data-size="120" data-rating="pg" data-default="http://www.gravatar.com/avatar/" data-secure="true"></gravatar-image>
         <h3>{{ score.pseudo }}</h3>
         <p>Actual score : {{ score.scores[score.scores.length - 1].score | number:0 }}</p>
         <p>Mean score by 5 minutes (in last hour) : {{ score.mean | number:0 }}</p>
@@ -92,8 +94,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
 <script src="/js/i18n/angular-locale_fr.js"></script>
+<script src="/js/gravatar-directive.js"></script>
+<script src="/js/md5-service.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/3.0.2/highcharts.js"></script>
 <script type="text/javascript">
+
+    angular.module('ScoreApp', ['md5', 'ui-gravatar']);
+
     function ScoresCtrl($scope, $http, $filter) {
 
         var currentTimeOffsetInMs = new Date().getTimezoneOffset() * 60 * 1000;
@@ -125,7 +132,7 @@
                             delta
                         ]);
                         if(valuesBeforesEnd <= 13) {
-                            sum += (score.score - precScore);
+                            sum += delta;
                         }
                     }
                     precScore = score.score;
@@ -141,6 +148,9 @@
                 }
                 scoresTimeSeries.push(scoreForTimeSerie);
                 deltaTimeSeries.push(deltaForTimeSerie);
+            });
+            $scope.scores.sort(function(player1, player2) {
+                return player2.mean - player1.mean;
             });
             drawScoresTimeseries(scoresTimeSeries);
             drawDeltaTimeseries(deltaTimeSeries);
