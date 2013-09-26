@@ -93,12 +93,18 @@ public class ScoreWithHistory {
             Score score = itScores.next();
             DateTime dateTimeOfScore = new DateTime(score.getTimeOfScore());
             String hourOfScore = dateTimeOfScore.toString("yyyyMMddHH");
-            if (dateTimeOfScore.compareTo(now.minusHours(12)) < 0
-                    && hoursKept.contains(hourOfScore)) {
+            String hoursForPast1Day = dateTimeOfScore.withHourOfDay((dateTimeOfScore.getHourOfDay() / 4) * 4).toString("yyyyMMddHH");
+            if (dateTimeOfScore.compareTo(now.minusHours(2)) < 0
+                    && hoursKept.contains(hourOfScore)
+                    || dateTimeOfScore.compareTo(now.minusDays(1)) < 0
+                    && hoursKept.contains(hoursForPast1Day)) {
                 itScores.remove();
             } else {
                 hoursKept.add(hourOfScore);
+                hoursKept.add(hoursForPast1Day);
             }
+
+
         }
     }
 }
