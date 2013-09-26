@@ -99,7 +99,7 @@
 <script src="/js/i18n/angular-locale_fr.js"></script>
 <script src="/js/gravatar-directive.js"></script>
 <script src="/js/md5-service.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/3.0.2/highcharts.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script>
 <script type="text/javascript">
 
     angular.module('ScoreApp', ['md5', 'ui-gravatar']);
@@ -189,9 +189,9 @@
 
 
     function drawScoresTimeseries(scoresTimeseries) {
-        var chart = new Highcharts.Chart({
+
+        $("#scores-timeseries").highcharts({
             chart: {
-                renderTo: 'scores-timeseries',
                 type: 'line',
                 zoomType: 'x'
             },
@@ -206,16 +206,29 @@
                     text: 'Score'
                 }
             },
+            plotOptions: {
+                line: {
+                    lineWidth: 1,
+                    marker: {
+                        enabled: false
+                    },
+                    shadow: false,
+                    states: {
+                        hover: {
+                            lineWidth: 1
+                        }
+                    },
+                    threshold: null
+                }
+            },
             series: scoresTimeseries
-        });
 
-        chart.redraw();
+        });
     }
 
     function drawDeltaTimeseries(deltaTimeseries) {
-        var chartDelta = new Highcharts.Chart({
+        $("#delta-timeseries").highcharts({
             chart: {
-                renderTo: 'delta-timeseries',
                 type: 'line',
                 zoomType: 'x'
             },
@@ -228,12 +241,20 @@
             yAxis: {
                 title: {
                     text: 'Score'
+                }
+            },
+            plotOptions: {
+                line: {
+                    lineWidth: 1,
+                    marker: {
+                        enabled: false
+                    },
+                    shadow: false,
+                    threshold: null
                 }
             },
             series: deltaTimeseries
         });
-
-        chartDelta.redraw();
     }
 </script>
 </body>
