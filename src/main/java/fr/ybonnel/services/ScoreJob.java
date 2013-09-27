@@ -46,6 +46,9 @@ public class ScoreJob implements Runnable {
         try {
             DateTime now = new DateTime(DateTimeZone.forID("Europe/Paris"));
             for (PlayerInfo playerInfo : playerService.leaderboard()) {
+                if (playerInfo.getPseudo().equals("Bleizig") && playerInfo.getScore() < 0) {
+                    continue;
+                }
                 ScoreWithHistory scoreWithHistory = MongoService.getDatastore().find(ScoreWithHistory.class, "pseudo", playerInfo.getPseudo()).get();
                 if (scoreWithHistory == null) {
                     scoreWithHistory = new ScoreWithHistory();
