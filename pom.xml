@@ -223,7 +223,7 @@
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
-			<url>http://repository-ybonnel.forge.cloudbees.com/snapshot/</url>
+			<url>http://repository-simpleweb4j.forge.cloudbees.com/snapshot/</url>
 		</repository>
 	</repositories>
 </project>
