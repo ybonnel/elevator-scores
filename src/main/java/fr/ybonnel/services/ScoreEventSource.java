@@ -28,18 +28,12 @@ import java.util.Map;
 
 public class ScoreEventSource implements Stream<List<ScoreForEventSource>> {
 
-    private PlayerService playerService;
-
     private Map<String, Integer> initialScores = new HashMap<>();
-
-    public ScoreEventSource() {
-        playerService = new RestAdapter.Builder().setServer("http://elevator.retour1024.eu.cloudbees.net").build().create(PlayerService.class);
-    }
 
     @Override
     public List<ScoreForEventSource> next() {
         List<ScoreForEventSource> result = new ArrayList<>();
-        for (PlayerInfo playerInfo : playerService.leaderboard()) {
+        for (PlayerInfo playerInfo : PlayerServiceWithCache.getInstance().leaderboard()) {
             if (!initialScores.containsKey(playerInfo.getEmail())) {
                 initialScores.put(playerInfo.getEmail(), playerInfo.getScore());
             }
@@ -49,12 +43,8 @@ public class ScoreEventSource implements Stream<List<ScoreForEventSource>> {
     }
 
     @Override
-    public boolean hasNext() {
-        try {
-            Thread.sleep(5000);
-        }
-        catch (InterruptedException ignore) {
-        }
-        return true;
+    public int timeBeforeNextEvent() {
+        // 5 seconds
+        return 5000;
     }
 }
