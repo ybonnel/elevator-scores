@@ -48,9 +48,6 @@ public class ScoreJob implements Runnable {
             for (PlayerInfo playerInfo : playerService.leaderboard()) {
                 ScoreWithHistory scoreWithHistory = MongoService.getDatastore().find(ScoreWithHistory.class, "email", playerInfo.getEmail()).get();
                 if (scoreWithHistory == null) {
-                    scoreWithHistory = MongoService.getDatastore().find(ScoreWithHistory.class, "pseudo", playerInfo.getPseudo()).get();
-                }
-                if (scoreWithHistory == null) {
                     scoreWithHistory = new ScoreWithHistory();
                     scoreWithHistory.setPseudo(playerInfo.getPseudo());
                 }
