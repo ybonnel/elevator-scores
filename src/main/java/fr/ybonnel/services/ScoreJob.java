@@ -36,7 +36,7 @@ public class ScoreJob implements Runnable {
 
     public ScoreJob() {
         playerService = new RestAdapter.Builder().setServer("http://elevator.retour1024.eu.cloudbees.net").build().create(PlayerService.class);
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this, 0, 30, TimeUnit.SECONDS);
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this, 0, 5, TimeUnit.MINUTES);
     }
 
 
