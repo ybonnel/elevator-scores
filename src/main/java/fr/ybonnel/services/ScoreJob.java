@@ -36,7 +36,7 @@ public class ScoreJob implements Runnable {
 
     public ScoreJob() {
         playerService = new RestAdapter.Builder().setServer("http://elevator.retour1024.eu.cloudbees.net").build().create(PlayerService.class);
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this, 0, 5, TimeUnit.MINUTES);
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this, 0, 30, TimeUnit.SECONDS);
     }
 
 
@@ -46,7 +46,7 @@ public class ScoreJob implements Runnable {
         try {
             DateTime now = new DateTime(DateTimeZone.forID("Europe/Paris"));
             for (PlayerInfo playerInfo : playerService.leaderboard()) {
-                if (playerInfo.getScore() > 0) {
+                //if (playerInfo.getScore() > 0) {
                     ScoreWithHistory scoreWithHistory = MongoService.getDatastore().find(ScoreWithHistory.class, "email", playerInfo.getEmail()).get();
                     if (scoreWithHistory == null) {
                         scoreWithHistory = new ScoreWithHistory();
@@ -56,12 +56,12 @@ public class ScoreJob implements Runnable {
                     scoreWithHistory.getScores().add(new Score(now.toDate(), playerInfo.getScore()));
                     scoreWithHistory.aggregateScores(now);
                     MongoService.getDatastore().save(scoreWithHistory.prepareForDb());
-                }
+                //}
             }
             // Clean negative of no playing players
             for (ScoreWithHistory scoreWithHistory : MongoService.getDatastore().find(ScoreWithHistory.class).asList()) {
                 if (scoreWithHistory.mustBeRemoved()) {
-                    MongoService.getDatastore().delete(scoreWithHistory);
+                    MongoService.getDatastore().delete(scoreWithHistory.prepareForDb());
                 }
             }
         } catch (Exception exception) {

@@ -113,7 +113,7 @@ public class ScoreWithHistory {
             return true;
         }
         DateTime lastTimeOfScore = new DateTime(getScores().get(0).getTimeOfScore());
-        int lastScore = 0;
+        int lastScore = getScores().get(0).getScore();
 
         for (Score score : getScores()) {
             if (lastTimeOfScore.isBefore(new DateTime(score.getTimeOfScore()))) {
