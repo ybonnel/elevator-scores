@@ -107,4 +107,22 @@ public class ScoreWithHistory {
 
         }
     }
+
+    public boolean mustBeRemoved() {
+        if (getScores().isEmpty()) {
+            return true;
+        }
+        DateTime lastTimeOfScore = new DateTime(getScores().get(0).getTimeOfScore());
+        int lastScore = 0;
+
+        for (Score score : getScores()) {
+            if (lastTimeOfScore.isBefore(new DateTime(score.getTimeOfScore()))) {
+                lastTimeOfScore = new DateTime(score.getTimeOfScore());
+                lastScore = score.getScore();
+            }
+        }
+
+        return lastTimeOfScore.isBefore(new DateTime().minusDays(1))
+                || lastScore < 0;
+    }
 }

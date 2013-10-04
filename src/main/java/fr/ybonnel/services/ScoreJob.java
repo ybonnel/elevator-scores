@@ -46,15 +46,23 @@ public class ScoreJob implements Runnable {
         try {
             DateTime now = new DateTime(DateTimeZone.forID("Europe/Paris"));
             for (PlayerInfo playerInfo : playerService.leaderboard()) {
-                ScoreWithHistory scoreWithHistory = MongoService.getDatastore().find(ScoreWithHistory.class, "email", playerInfo.getEmail()).get();
-                if (scoreWithHistory == null) {
-                    scoreWithHistory = new ScoreWithHistory();
-                    scoreWithHistory.setPseudo(playerInfo.getPseudo());
-                    scoreWithHistory.setEmail(playerInfo.getEmail());
+                if (playerInfo.getScore() > 0) {
+                    ScoreWithHistory scoreWithHistory = MongoService.getDatastore().find(ScoreWithHistory.class, "email", playerInfo.getEmail()).get();
+                    if (scoreWithHistory == null) {
+                        scoreWithHistory = new ScoreWithHistory();
+                        scoreWithHistory.setPseudo(playerInfo.getPseudo());
+                        scoreWithHistory.setEmail(playerInfo.getEmail());
+                    }
+                    scoreWithHistory.getScores().add(new Score(now.toDate(), playerInfo.getScore()));
+                    scoreWithHistory.aggregateScores(now);
+                    MongoService.getDatastore().save(scoreWithHistory.prepareForDb());
                 }
-                scoreWithHistory.getScores().add(new Score(now.toDate(), playerInfo.getScore()));
-                scoreWithHistory.aggregateScores(now);
-                MongoService.getDatastore().save(scoreWithHistory.prepareForDb());
+            }
+            // Clean negative of no playing players
+            for (ScoreWithHistory scoreWithHistory : MongoService.getDatastore().find(ScoreWithHistory.class).asList()) {
+                if (scoreWithHistory.mustBeRemoved()) {
+                    MongoService.getDatastore().delete(scoreWithHistory);
+                }
             }
         } catch (Exception exception) {
             exception.printStackTrace();
