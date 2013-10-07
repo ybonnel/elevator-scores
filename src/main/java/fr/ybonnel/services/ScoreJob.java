@@ -46,7 +46,8 @@ public class ScoreJob implements Runnable {
         try {
             DateTime now = new DateTime(DateTimeZone.forID("Europe/Paris"));
             for (PlayerInfo playerInfo : playerService.leaderboard()) {
-                //if (playerInfo.getScore() > 0) {
+                if (playerInfo.getScore() > 0
+                        || "flagadajones".equals(playerInfo.getPseudo())) {
                     ScoreWithHistory scoreWithHistory = MongoService.getDatastore().find(ScoreWithHistory.class, "email", playerInfo.getEmail()).get();
                     if (scoreWithHistory == null) {
                         scoreWithHistory = new ScoreWithHistory();
@@ -56,7 +57,7 @@ public class ScoreJob implements Runnable {
                     scoreWithHistory.getScores().add(new Score(now.toDate(), playerInfo.getScore()));
                     scoreWithHistory.aggregateScores(now);
                     MongoService.getDatastore().save(scoreWithHistory.prepareForDb());
-                //}
+                }
             }
             // Clean negative of no playing players
             for (ScoreWithHistory scoreWithHistory : MongoService.getDatastore().find(ScoreWithHistory.class).asList()) {

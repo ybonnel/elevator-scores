@@ -112,6 +112,9 @@ public class ScoreWithHistory {
         if (getScores().isEmpty()) {
             return true;
         }
+        if ("flagadajones".equals(getPseudo())) {
+            return false;
+        }
         DateTime lastTimeOfScore = new DateTime(getScores().get(0).getTimeOfScore());
         int lastScore = getScores().get(0).getScore();
 
