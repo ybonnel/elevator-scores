@@ -72,8 +72,8 @@
     <div class="card" ng-repeat="score in scores">
         <gravatar-image data-email="score.email" data-size="120" data-rating="pg" data-default="http://www.gravatar.com/avatar/" data-secure="true"></gravatar-image>
         <h3>{{ score.pseudo }}</h3>
-        <p>Actual score : {{ score.scores[score.scores.length - 1].score | number:0 }}</p>
-        <p>Mean score by 5 minutes (in last hour) : {{ score.mean | number:0 }}</p>
+        <p>Current score : {{ score.scores[score.scores.length - 1].score | number:0 }}</p>
+        <p>Average score by 5 minutes (in last hour) : {{ score.mean | number:0 }}</p>
     </div>
 
     <div class="histo">
