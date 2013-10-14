@@ -79,6 +79,8 @@
     <div class="histo">
         <div class="histo-content">
             <h3>Historique des scores</h3>
+            <button type="button" class="btn btn-default" ng-click="changeVisibleAllInHighcharts('#scores-timeseries', false)">Disable all</button>
+            <button type="button" class="btn btn-default" ng-click="changeVisibleAllInHighcharts('#scores-timeseries', true)">Enable all</button>
             <div id="scores-timeseries"></div>
         </div>
     </div>
@@ -87,6 +89,8 @@
     <div class="histo">
         <div class="histo-content">
             <h3>Historique des deltas</h3>
+            <button type="button" class="btn btn-default" ng-click="changeVisibleAllInHighcharts('#delta-timeseries', false)">Disable all</button>
+            <button type="button" class="btn btn-default" ng-click="changeVisibleAllInHighcharts('#delta-timeseries', true)">Enable all</button>
             <div id="delta-timeseries"></div>
         </div>
     </div>
@@ -107,6 +111,14 @@
     function ScoresCtrl($scope, $http, $filter) {
 
         var currentTimeOffsetInMs = new Date().getTimezoneOffset() * 60 * 1000;
+
+        $scope.changeVisibleAllInHighcharts = function(chartName, visibiliy) {
+            var chart = $(chartName).highcharts();
+            angular.forEach(chart.series, function(serie) {
+                serie.setVisible(visibiliy, false);
+            });
+            chart.redraw();
+        };
 
         $http.get("/scores").success(function(data) {
             $scope.scores = data;
