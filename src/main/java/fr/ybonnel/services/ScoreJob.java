@@ -35,7 +35,7 @@ public class ScoreJob implements Runnable {
     private PlayerService playerService;
 
     public ScoreJob() {
-        playerService = new RestAdapter.Builder().setServer("http://elevator.retour1024.eu.cloudbees.net").build().create(PlayerService.class);
+        playerService = new RestAdapter.Builder().setServer("http://elevator.code-story.net/").build().create(PlayerService.class);
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this, 0, 5, TimeUnit.MINUTES);
     }
 
@@ -46,15 +46,16 @@ public class ScoreJob implements Runnable {
         try {
             DateTime now = new DateTime(DateTimeZone.forID("Europe/Paris"));
             for (PlayerInfo playerInfo : playerService.leaderboard()) {
-                if (playerInfo.getScore() > 0
-                        || "flagadajones".equals(playerInfo.getPseudo())) {
-                    ScoreWithHistory scoreWithHistory = MongoService.getDatastore().find(ScoreWithHistory.class, "email", playerInfo.getEmail()).get();
+                if (playerInfo.getAverageScore() > 0) {
+                    ScoreWithHistory scoreWithHistory = MongoService.getDatastore().find(ScoreWithHistory.class, "externalId", playerInfo.getId()).get();
                     if (scoreWithHistory == null) {
                         scoreWithHistory = new ScoreWithHistory();
-                        scoreWithHistory.setPseudo(playerInfo.getPseudo());
-                        scoreWithHistory.setEmail(playerInfo.getEmail());
+                        scoreWithHistory.setExternalId(playerInfo.getId());
                     }
+                    scoreWithHistory.setPseudo(playerInfo.getPseudo());
+                    scoreWithHistory.setPhoto(playerInfo.getPhoto());
                     scoreWithHistory.getScores().add(new Score(now.toDate(), playerInfo.getScore()));
+                    scoreWithHistory.getAverageScores().add(new Score(now.toDate(), playerInfo.getAverageScore()));
                     scoreWithHistory.aggregateScores(now);
                     MongoService.getDatastore().save(scoreWithHistory.prepareForDb());
                 }

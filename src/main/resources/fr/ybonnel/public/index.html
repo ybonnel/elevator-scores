@@ -52,7 +52,7 @@
             width:97%;
         }
 
-        div#delta-timeseries {
+        div#average-timeseries {
             width:97%;
         }
 
@@ -69,11 +69,11 @@
 <div ng-controller="ScoresCtrl">
     <h1 class="card">Scores of CodeStory Elevator</h1>
 
-    <div class="card" ng-repeat="score in scores">
-        <gravatar-image data-email="score.email" data-size="120" data-rating="pg" data-default="http://www.gravatar.com/avatar/" data-secure="true"></gravatar-image>
-        <h3>{{ score.pseudo }}</h3>
-        <p>Current score : {{ score.scores[score.scores.length - 1].score | number:0 }}</p>
-        <p>Average score by 5 minutes (in last hour) : {{ score.mean | number:0 }}</p>
+    <div class="card" ng-repeat="player in scores">
+        <img ng-src="{{player.photo}}">
+        <h3>{{ player.pseudo }}</h3>
+        <p>Current score : {{ player.score | number:0 }}</p>
+        <p>Average score : {{ player.average | number:0 }}</p>
     </div>
 
     <div class="histo">
@@ -88,10 +88,10 @@
 
     <div class="histo">
         <div class="histo-content">
-            <h3>Historique des deltas</h3>
-            <button type="button" class="btn btn-default" ng-click="changeVisibleAllInHighcharts('#delta-timeseries', false)">Disable all</button>
-            <button type="button" class="btn btn-default" ng-click="changeVisibleAllInHighcharts('#delta-timeseries', true)">Enable all</button>
-            <div id="delta-timeseries"></div>
+            <h3>Historique des scores moyens</h3>
+            <button type="button" class="btn btn-default" ng-click="changeVisibleAllInHighcharts('#average-timeseries', false)">Disable all</button>
+            <button type="button" class="btn btn-default" ng-click="changeVisibleAllInHighcharts('#average-timeseries', true)">Enable all</button>
+            <div id="average-timeseries"></div>
         </div>
     </div>
 
@@ -123,7 +123,7 @@
         $http.get("/scores").success(function(data) {
             $scope.scores = data;
             var scoresTimeSeries = [];
-            var deltaTimeSeries = [];
+            var averageTimeSeries = [];
             data.sort(function(player1, player2) {
                 if (player1.pseudo > player2.pseudo) {
                     return 1;
@@ -133,50 +133,36 @@
                 return 0;
             });
             angular.forEach(data, function(player) {
-                var sum = 0;
                 var scoreForTimeSerie = {};
                 scoreForTimeSerie.name = player.pseudo;
                 scoreForTimeSerie.data = [];
-                var deltaForTimeSerie = {};
-                deltaForTimeSerie.name = player.pseudo;
-                deltaForTimeSerie.data = [];
-
-                var precScore = 0;
-                var precDate;
-                var valuesBeforesEnd = player.scores.length;
+                var averageTimeSerie = {};
+                averageTimeSerie.name = player.pseudo;
+                averageTimeSerie.data = [];
                 angular.forEach(player.scores, function(score) {
                     var dateOfScore = jsonStringToDate(score.timeOfScore).getTime() - currentTimeOffsetInMs;
-                    if (precScore !== 0) {
-                        var delta = (score.score - precScore);
-                        var deltaDate = dateOfScore - precDate;
-                        delta = Math.round((delta / deltaDate) * 1000 * 300 * 100)/100;
-                        deltaForTimeSerie.data.push([
-                            dateOfScore,
-                            delta
-                        ]);
-                        if(valuesBeforesEnd <= 13) {
-                            sum += delta;
-                        }
-                    }
-                    precScore = score.score;
-                    precDate = dateOfScore;
-                    valuesBeforesEnd--;
                     scoreForTimeSerie.data.push([
                         dateOfScore,
                         score.score
                     ]);
+                    player.score = score.score;
                 });
-                if (player.scores.length > 0) {
-                    player.mean = sum / (Math.min(player.scores.length - 1, 13));
-                }
+                angular.forEach(player.averageScores, function(score) {
+                    var dateOfScore = jsonStringToDate(score.timeOfScore).getTime() - currentTimeOffsetInMs;
+                    averageTimeSerie.data.push([
+                        dateOfScore,
+                        score.score
+                    ]);
+                    player.average = score.score;
+                });
                 scoresTimeSeries.push(scoreForTimeSerie);
-                deltaTimeSeries.push(deltaForTimeSerie);
+                averageTimeSeries.push(averageTimeSerie);
             });
             $scope.scores.sort(function(player1, player2) {
-                return player2.mean - player1.mean;
+                return player2.average - player1.average;
             });
             drawScoresTimeseries(scoresTimeSeries);
-            drawDeltaTimeseries(deltaTimeSeries);
+            drawAverageTimeseries(averageTimeSeries);
         });
     }
 
@@ -246,8 +232,8 @@
         });
     }
 
-    function drawDeltaTimeseries(deltaTimeseries) {
-        $("#delta-timeseries").highcharts({
+    function drawAverageTimeseries(averageTimeseries) {
+        $("#average-timeseries").highcharts({
             chart: {
                 type: 'line',
                 zoomType: 'x'
@@ -273,7 +259,7 @@
                     threshold: null
                 }
             },
-            series: deltaTimeseries
+            series: averageTimeseries
         });
     }
 </script>

@@ -26,7 +26,7 @@ public class PlayerServiceWithCache {
 
     private static PlayerServiceWithCache instance = new PlayerServiceWithCache();
 
-    private PlayerService playerService = new RestAdapter.Builder().setServer("http://elevator.retour1024.eu.cloudbees.net").build().create(PlayerService.class);
+    private PlayerService playerService = new RestAdapter.Builder().setServer("http://elevator.code-story.net/").build().create(PlayerService.class);
 
     public static PlayerServiceWithCache getInstance() {
         return instance;

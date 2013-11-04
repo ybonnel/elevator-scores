@@ -5,14 +5,16 @@ import java.io.Serializable;
 public class PlayerInfo implements Serializable {
 
     private String pseudo;
-    private String email;
+    private String id;
     private int score;
+    private int averageScore;
     private int[] peopleWaitingTheElevator;
     private int elevatorAtFloor;
     private int peopleInTheElevator;
     private boolean doorIsOpen;
     private String lastErrorMessage;
     private String state;
+    private String photo;
 
     public String getPseudo() {
         return pseudo;
@@ -22,12 +24,20 @@ public class PlayerInfo implements Serializable {
         this.pseudo = pseudo;
     }
 
-    public String getEmail() {
-        return email;
+    public String getId() {
+        return id;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public int getAverageScore() {
+        return averageScore;
+    }
+
+    public void setAverageScore(int averageScore) {
+        this.averageScore = averageScore;
     }
 
     public int getScore() {
@@ -84,5 +94,13 @@ public class PlayerInfo implements Serializable {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 }

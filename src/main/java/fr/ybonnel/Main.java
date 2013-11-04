@@ -81,10 +81,10 @@ public class Main {
 
             @Override
             public Response<List<ScoreForEventSource>> handle(Void param, RouteParameters routeParams) throws HttpErrorException {
-                PlayerService playerService = new RestAdapter.Builder().setServer("http://elevator.retour1024.eu.cloudbees.net").build().create(PlayerService.class);
+                PlayerService playerService = new RestAdapter.Builder().setServer("http://elevator.code-story.net/").build().create(PlayerService.class);
                 List<ScoreForEventSource> result = new ArrayList<>();
                 for (PlayerInfo playerInfo : playerService.leaderboard()) {
-                    result.add(new ScoreForEventSource(playerInfo.getPseudo(), playerInfo.getEmail()));
+                    result.add(new ScoreForEventSource(playerInfo.getPseudo(), playerInfo.getId()));
                 }
                 return new Response<>(result);
             }

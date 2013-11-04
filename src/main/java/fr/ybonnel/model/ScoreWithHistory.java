@@ -37,10 +37,15 @@ public class ScoreWithHistory {
     @Indexed
     private String pseudo;
 
-    private String email;
+    private String externalId;
+
+    private String photo;
 
     @Serialized
     private ArrayList<Score> scores;
+
+    @Serialized
+    private ArrayList<Score> averageScores;
 
     public String getId() {
         return id;
@@ -58,12 +63,20 @@ public class ScoreWithHistory {
         this.pseudo = pseudo;
     }
 
-    public String getEmail() {
-        return email;
+    public String getExternalId() {
+        return externalId;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 
     public ArrayList<Score> getScores() {
@@ -71,6 +84,13 @@ public class ScoreWithHistory {
             scores = new ArrayList<>();
         }
         return scores;
+    }
+
+    public ArrayList<Score> getAverageScores() {
+        if (averageScores == null) {
+            averageScores = new ArrayList<>();
+        }
+        return averageScores;
     }
 
     @PostLoad
@@ -87,7 +107,11 @@ public class ScoreWithHistory {
     }
 
     public void aggregateScores(DateTime now) {
-        Iterator<Score> itScores = getScores().iterator();
+        aggregateOneTypeOfScore(now, getScores().iterator());
+        aggregateOneTypeOfScore(now, getAverageScores().iterator());
+    }
+
+    private void aggregateOneTypeOfScore(DateTime now, Iterator<Score> itScores) {
         Set<String> hoursKept = new HashSet<>();
         while (itScores.hasNext()) {
             Score score = itScores.next();
@@ -103,22 +127,17 @@ public class ScoreWithHistory {
                 hoursKept.add(hourOfScore);
                 hoursKept.add(hoursForPast1Day);
             }
-
-
         }
     }
 
     public boolean mustBeRemoved() {
-        if (getScores().isEmpty()) {
+        if (getAverageScores().isEmpty()) {
             return true;
         }
-        if ("flagadajones".equals(getPseudo())) {
-            return false;
-        }
-        DateTime lastTimeOfScore = new DateTime(getScores().get(0).getTimeOfScore());
-        int lastScore = getScores().get(0).getScore();
+        DateTime lastTimeOfScore = new DateTime(getAverageScores().get(0).getTimeOfScore());
+        int lastScore = getAverageScores().get(0).getScore();
 
-        for (Score score : getScores()) {
+        for (Score score : getAverageScores()) {
             if (lastTimeOfScore.isBefore(new DateTime(score.getTimeOfScore()))) {
                 lastTimeOfScore = new DateTime(score.getTimeOfScore());
                 lastScore = score.getScore();

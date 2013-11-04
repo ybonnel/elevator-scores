@@ -20,7 +20,7 @@ public class ScoreForEventSource {
 
     private String pseudo;
     private Integer score;
-    private String email;
+    private String id;
 
     public String getPseudo() {
         return pseudo;
@@ -38,22 +38,22 @@ public class ScoreForEventSource {
         this.score = score;
     }
 
-    public String getEmail() {
-        return email;
+    public String getId() {
+        return id;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public ScoreForEventSource(String pseudo, Integer score, String email) {
+    public ScoreForEventSource(String pseudo, Integer score, String id) {
         this.pseudo = pseudo;
         this.score = score;
-        this.email = email;
+        this.id = id;
     }
 
-    public ScoreForEventSource(String pseudo, String email) {
+    public ScoreForEventSource(String pseudo, String id) {
         this.pseudo = pseudo;
-        this.email = email;
+        this.id = id;
     }
 }

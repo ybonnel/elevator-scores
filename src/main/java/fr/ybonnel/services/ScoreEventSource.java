@@ -19,7 +19,6 @@ package fr.ybonnel.services;
 import fr.ybonnel.model.PlayerInfo;
 import fr.ybonnel.model.ScoreForEventSource;
 import fr.ybonnel.simpleweb4j.handlers.eventsource.Stream;
-import retrofit.RestAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,10 +33,10 @@ public class ScoreEventSource implements Stream<List<ScoreForEventSource>> {
     public List<ScoreForEventSource> next() {
         List<ScoreForEventSource> result = new ArrayList<>();
         for (PlayerInfo playerInfo : PlayerServiceWithCache.getInstance().leaderboard()) {
-            if (!initialScores.containsKey(playerInfo.getEmail())) {
-                initialScores.put(playerInfo.getEmail(), playerInfo.getScore());
+            if (!initialScores.containsKey(playerInfo.getId())) {
+                initialScores.put(playerInfo.getId(), playerInfo.getScore());
             }
-            result.add(new ScoreForEventSource(playerInfo.getPseudo(), playerInfo.getScore() - initialScores.get(playerInfo.getEmail()), playerInfo.getEmail()));
+            result.add(new ScoreForEventSource(playerInfo.getPseudo(), playerInfo.getScore() - initialScores.get(playerInfo.getId()), playerInfo.getId()));
         }
         return result;
     }
