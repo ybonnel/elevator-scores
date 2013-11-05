@@ -7,7 +7,8 @@ public class PlayerInfo implements Serializable {
     private String pseudo;
     private String id;
     private int score;
-    private int averageScore;
+    private int nbSuccess;
+    private int nbLose;
     private int[] peopleWaitingTheElevator;
     private int elevatorAtFloor;
     private int peopleInTheElevator;
@@ -32,12 +33,8 @@ public class PlayerInfo implements Serializable {
         this.id = id;
     }
 
-    public int getAverageScore() {
-        return averageScore;
-    }
-
-    public void setAverageScore(int averageScore) {
-        this.averageScore = averageScore;
+    public double getAverageScore() {
+        return ((double) score) / (nbSuccess == 0 ? 1 : nbSuccess);
     }
 
     public int getScore() {
@@ -102,5 +99,21 @@ public class PlayerInfo implements Serializable {
 
     public void setPhoto(String photo) {
         this.photo = photo;
+    }
+
+    public int getNbLose() {
+        return nbLose;
+    }
+
+    public void setNbLose(int nbLose) {
+        this.nbLose = nbLose;
+    }
+
+    public int getNbSuccess() {
+        return nbSuccess;
+    }
+
+    public void setNbSuccess(int nbSuccess) {
+        this.nbSuccess = nbSuccess;
     }
 }

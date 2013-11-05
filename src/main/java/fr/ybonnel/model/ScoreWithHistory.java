@@ -135,7 +135,7 @@ public class ScoreWithHistory {
             return true;
         }
         DateTime lastTimeOfScore = new DateTime(getAverageScores().get(0).getTimeOfScore());
-        int lastScore = getAverageScores().get(0).getScore();
+        double lastScore = getAverageScores().get(0).getScore();
 
         for (Score score : getAverageScores()) {
             if (lastTimeOfScore.isBefore(new DateTime(score.getTimeOfScore()))) {

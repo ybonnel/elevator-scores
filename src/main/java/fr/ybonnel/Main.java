@@ -9,23 +9,16 @@ import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.runtime.Network;
-import fr.ybonnel.model.PlayerInfo;
-import fr.ybonnel.model.ScoreForEventSource;
 import fr.ybonnel.model.ScoreWithHistory;
 import fr.ybonnel.services.MongoService;
-import fr.ybonnel.services.PlayerService;
-import fr.ybonnel.services.ScoreEventSource;
 import fr.ybonnel.services.ScoreJob;
 import fr.ybonnel.simpleweb4j.exception.HttpErrorException;
 import fr.ybonnel.simpleweb4j.handlers.Response;
 import fr.ybonnel.simpleweb4j.handlers.Route;
 import fr.ybonnel.simpleweb4j.handlers.RouteParameters;
-import fr.ybonnel.simpleweb4j.handlers.eventsource.Stream;
-import retrofit.RestAdapter;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -60,32 +53,11 @@ public class Main {
                 Collections.sort(result, new Comparator<ScoreWithHistory>() {
                     @Override
                     public int compare(ScoreWithHistory o1, ScoreWithHistory o2) {
-                        Integer score1 = o1.getScores().get(o1.getScores().size() - 1).getScore();
-                        Integer score2 = o2.getScores().get(o2.getScores().size() - 1).getScore();
+                        Double score1 = o1.getScores().get(o1.getScores().size() - 1).getScore();
+                        Double score2 = o2.getScores().get(o2.getScores().size() - 1).getScore();
                         return score2.compareTo(score1);
                     }
                 });
-                return new Response<>(result);
-            }
-        });
-
-        get(new Route<Void, Stream<List<ScoreForEventSource>>>("/event/scores", Void.class) {
-
-            @Override
-            public Response<Stream<List<ScoreForEventSource>>> handle(Void param, RouteParameters routeParams) throws HttpErrorException {
-                return new Response<Stream<List<ScoreForEventSource>>>(new ScoreEventSource());
-            }
-        });
-
-        get(new Route<Void, List<ScoreForEventSource>>("/players", Void.class) {
-
-            @Override
-            public Response<List<ScoreForEventSource>> handle(Void param, RouteParameters routeParams) throws HttpErrorException {
-                PlayerService playerService = new RestAdapter.Builder().setServer("http://elevator.code-story.net/").build().create(PlayerService.class);
-                List<ScoreForEventSource> result = new ArrayList<>();
-                for (PlayerInfo playerInfo : playerService.leaderboard()) {
-                    result.add(new ScoreForEventSource(playerInfo.getPseudo(), playerInfo.getId()));
-                }
                 return new Response<>(result);
             }
         });

@@ -73,7 +73,7 @@
         <img ng-src="{{player.photo}}">
         <h3>{{ player.pseudo }}</h3>
         <p>Current score : {{ player.score | number:0 }}</p>
-        <p>Average score : {{ player.average | number:0 }}</p>
+        <p>Average score : {{ player.average | number:2 }}</p>
     </div>
 
     <div class="histo">
@@ -109,6 +109,13 @@
     angular.module('ScoreApp', ['md5', 'ui-gravatar']);
 
     function ScoresCtrl($scope, $http, $filter) {
+
+        Highcharts.setOptions({
+            lang: {
+                decimalPoint: ',',
+                thousandsSep: ' '
+            }
+        });
 
         var currentTimeOffsetInMs = new Date().getTimezoneOffset() * 60 * 1000;
 
@@ -258,6 +265,9 @@
                     shadow: false,
                     threshold: null
                 }
+            },
+            tooltip: {
+                valueDecimals:2
             },
             series: averageTimeseries
         });

@@ -16,8 +16,6 @@
  */
 package fr.ybonnel.model;
 
-import org.joda.time.DateTime;
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -25,7 +23,7 @@ public class Score implements Serializable {
 
     private Date timeOfScore;
 
-    private int score;
+    private double score;
 
     public Date getTimeOfScore() {
         return timeOfScore;
@@ -35,18 +33,18 @@ public class Score implements Serializable {
         this.timeOfScore = timeOfScore;
     }
 
-    public int getScore() {
+    public double getScore() {
         return score;
     }
 
-    public void setScore(int score) {
+    public void setScore(double score) {
         this.score = score;
     }
 
     public Score() {
     }
 
-    public Score(Date timeOfScore, int score) {
+    public Score(Date timeOfScore, double score) {
         this.timeOfScore = timeOfScore;
         this.score = score;
     }
