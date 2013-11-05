@@ -25,11 +25,25 @@ public class MongoService {
 
     private static Datastore datastore;
 
+    private static MongoClient myMongoClient;
+
+    private static String myDbName;
+
     public static void setMongoClient(MongoClient mongoClient, String dbName) {
+        myMongoClient = mongoClient;
         datastore = new Morphia().map(ScoreWithHistory.class).createDatastore(mongoClient, dbName);
+        myDbName = dbName;
     }
 
     public static Datastore getDatastore() {
         return datastore;
+    }
+
+    public static MongoClient getMyMongoClient() {
+        return myMongoClient;
+    }
+
+    public static String getMyDbName() {
+        return myDbName;
     }
 }

@@ -62,6 +62,15 @@ public class Main {
             }
         });
 
+        get(new Route<Void, Void>("/flushdatabase", Void.class) {
+
+            @Override
+            public Response<Void> handle(Void param, RouteParameters routeParams) throws HttpErrorException {
+                MongoService.getMyMongoClient().getDB(MongoService.getMyDbName()).dropDatabase();
+                return new Response<>(null);
+            }
+        });
+
         ScoreJob job = new ScoreJob();
 
         // Start the server.
