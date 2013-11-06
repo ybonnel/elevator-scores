@@ -23,7 +23,7 @@ import java.util.List;
 
 public interface PlayerService {
 
-    @GET("/resources/leaderboard")
+    @GET("/contest/scores")
     List<PlayerInfo> leaderboard();
 
 }

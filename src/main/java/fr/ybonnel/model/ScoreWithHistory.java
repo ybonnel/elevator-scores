@@ -37,8 +37,6 @@ public class ScoreWithHistory {
     @Indexed
     private String pseudo;
 
-    private String externalId;
-
     private String photo;
 
     @Serialized
@@ -61,14 +59,6 @@ public class ScoreWithHistory {
 
     public void setPseudo(String pseudo) {
         this.pseudo = pseudo;
-    }
-
-    public String getExternalId() {
-        return externalId;
-    }
-
-    public void setExternalId(String externalId) {
-        this.externalId = externalId;
     }
 
     public String getPhoto() {

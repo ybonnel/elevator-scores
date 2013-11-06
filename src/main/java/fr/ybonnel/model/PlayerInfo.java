@@ -4,93 +4,36 @@ import java.io.Serializable;
 
 public class PlayerInfo implements Serializable {
 
-    private String pseudo;
-    private String id;
-    private int score;
+    private double averageScore;
+    private int nbLoses;
     private int nbSuccess;
-    private int nbLose;
-    private int[] peopleWaitingTheElevator;
-    private int elevatorAtFloor;
-    private int peopleInTheElevator;
-    private boolean doorIsOpen;
-    private String lastErrorMessage;
-    private String state;
     private String photo;
-
-    public String getPseudo() {
-        return pseudo;
-    }
-
-    public void setPseudo(String pseudo) {
-        this.pseudo = pseudo;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
+    private int position;
+    private String pseudo;
+    private int score;
 
     public double getAverageScore() {
-        return ((double) score) / (nbSuccess == 0 ? 1 : nbSuccess);
+        return averageScore;
     }
 
-    public int getScore() {
-        return score;
+    public void setAverageScore(double averageScore) {
+        this.averageScore = averageScore;
     }
 
-    public void setScore(int score) {
-        this.score = score;
+    public int getNbLoses() {
+        return nbLoses;
     }
 
-    public int[] getPeopleWaitingTheElevator() {
-        return peopleWaitingTheElevator;
+    public void setNbLoses(int nbLoses) {
+        this.nbLoses = nbLoses;
     }
 
-    public void setPeopleWaitingTheElevator(int[] peopleWaitingTheElevator) {
-        this.peopleWaitingTheElevator = peopleWaitingTheElevator;
+    public int getNbSuccess() {
+        return nbSuccess;
     }
 
-    public int getElevatorAtFloor() {
-        return elevatorAtFloor;
-    }
-
-    public void setElevatorAtFloor(int elevatorAtFloor) {
-        this.elevatorAtFloor = elevatorAtFloor;
-    }
-
-    public int getPeopleInTheElevator() {
-        return peopleInTheElevator;
-    }
-
-    public void setPeopleInTheElevator(int peopleInTheElevator) {
-        this.peopleInTheElevator = peopleInTheElevator;
-    }
-
-    public boolean isDoorIsOpen() {
-        return doorIsOpen;
-    }
-
-    public void setDoorIsOpen(boolean doorIsOpen) {
-        this.doorIsOpen = doorIsOpen;
-    }
-
-    public String getLastErrorMessage() {
-        return lastErrorMessage;
-    }
-
-    public void setLastErrorMessage(String lastErrorMessage) {
-        this.lastErrorMessage = lastErrorMessage;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
+    public void setNbSuccess(int nbSuccess) {
+        this.nbSuccess = nbSuccess;
     }
 
     public String getPhoto() {
@@ -101,19 +44,27 @@ public class PlayerInfo implements Serializable {
         this.photo = photo;
     }
 
-    public int getNbLose() {
-        return nbLose;
+    public int getPosition() {
+        return position;
     }
 
-    public void setNbLose(int nbLose) {
-        this.nbLose = nbLose;
+    public void setPosition(int position) {
+        this.position = position;
     }
 
-    public int getNbSuccess() {
-        return nbSuccess;
+    public String getPseudo() {
+        return pseudo;
     }
 
-    public void setNbSuccess(int nbSuccess) {
-        this.nbSuccess = nbSuccess;
+    public void setPseudo(String pseudo) {
+        this.pseudo = pseudo;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 }

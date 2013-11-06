@@ -35,7 +35,7 @@ public class ScoreJob implements Runnable {
     private PlayerService playerService;
 
     public ScoreJob() {
-        playerService = new RestAdapter.Builder().setServer("http://elevator.code-story.net/").build().create(PlayerService.class);
+        playerService = new RestAdapter.Builder().setServer("http://www.code-story.net/").build().create(PlayerService.class);
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this, 0, 5, TimeUnit.MINUTES);
     }
 
@@ -47,12 +47,11 @@ public class ScoreJob implements Runnable {
             DateTime now = new DateTime(DateTimeZone.forID("Europe/Paris"));
             for (PlayerInfo playerInfo : playerService.leaderboard()) {
                 if (playerInfo.getAverageScore() > 0) {
-                    ScoreWithHistory scoreWithHistory = MongoService.getDatastore().find(ScoreWithHistory.class, "externalId", playerInfo.getId()).get();
+                    ScoreWithHistory scoreWithHistory = MongoService.getDatastore().find(ScoreWithHistory.class, "pseudo", playerInfo.getPseudo()).get();
                     if (scoreWithHistory == null) {
                         scoreWithHistory = new ScoreWithHistory();
-                        scoreWithHistory.setExternalId(playerInfo.getId());
+                        scoreWithHistory.setPseudo(playerInfo.getPseudo());
                     }
-                    scoreWithHistory.setPseudo(playerInfo.getPseudo());
                     scoreWithHistory.setPhoto(playerInfo.getPhoto());
                     scoreWithHistory.getScores().add(new Score(now.toDate(), playerInfo.getScore()));
                     scoreWithHistory.getAverageScores().add(new Score(now.toDate(), playerInfo.getAverageScore()));
