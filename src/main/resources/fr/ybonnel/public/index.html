@@ -81,6 +81,7 @@
             <h3>Historique des scores</h3>
             <button type="button" class="btn btn-default" ng-click="changeVisibleAllInHighcharts('#scores-timeseries', false)">Disable all</button>
             <button type="button" class="btn btn-default" ng-click="changeVisibleAllInHighcharts('#scores-timeseries', true)">Enable all</button>
+            <button type="button" class="btn btn-default" ng-click="keepTop5('#scores-timeseries')">Top 5</button>
             <div id="scores-timeseries"></div>
         </div>
     </div>
@@ -91,6 +92,7 @@
             <h3>Historique des scores moyens</h3>
             <button type="button" class="btn btn-default" ng-click="changeVisibleAllInHighcharts('#average-timeseries', false)">Disable all</button>
             <button type="button" class="btn btn-default" ng-click="changeVisibleAllInHighcharts('#average-timeseries', true)">Enable all</button>
+            <button type="button" class="btn btn-default" ng-click="keepTop5('#average-timeseries')">Top 5</button>
             <div id="average-timeseries"></div>
         </div>
     </div>
@@ -123,6 +125,22 @@
             var chart = $(chartName).highcharts();
             angular.forEach(chart.series, function(serie) {
                 serie.setVisible(visibiliy, false);
+            });
+            chart.redraw();
+        };
+
+        $scope.keepTop5 = function(chartName) {
+            var chart = $(chartName).highcharts();
+            var seriesOrdered = [];
+            angular.forEach(chart.series, function(serie) {
+                serie.setVisible(false, false);
+                seriesOrdered.push(serie);
+            });
+            seriesOrdered.sort(function(serie1, serie2) {
+                return serie2.data[serie1.data.length - 1].y - serie1.data[serie1.data.length - 1].y;
+            });
+            angular.forEach(seriesOrdered.slice(0, 5), function(serie) {
+                serie.setVisible(true, false);
             });
             chart.redraw();
         };
