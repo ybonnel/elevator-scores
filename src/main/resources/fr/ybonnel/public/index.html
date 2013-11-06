@@ -137,7 +137,7 @@
                 seriesOrdered.push(serie);
             });
             seriesOrdered.sort(function(serie1, serie2) {
-                return serie2.data[serie1.data.length - 1].y - serie1.data[serie1.data.length - 1].y;
+                return serie2.data[serie2.data.length - 1].y - serie1.data[serie1.data.length - 1].y;
             });
             angular.forEach(seriesOrdered.slice(0, 5), function(serie) {
                 serie.setVisible(true, false);
